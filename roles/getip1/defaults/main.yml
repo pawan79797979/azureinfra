@@ -1,0 +1,5 @@
+---
+# defaults file for getip1
+resource_group: myResourceGroup
+name: node1
+private_ip: 10.0.1.6

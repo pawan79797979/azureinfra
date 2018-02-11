@@ -1,0 +1,13 @@
+---
+#/etc/ansible/roles/zooinstall/tasks/main.yml
+# tasks file for zooinstall
+   - name: Install all packages
+     yum: name={{item}} state=present update_cache=yes
+     with_items:
+       - java-1.8.0-openjdk.x86_64
+       - firewalld
+       - wget
+       - httpd
+       - nginx
+     
+   - get_url: url=http://apache.org/dist/zookeeper/current/zookeeper-3.4.10.tar.gz dest=/home/

@@ -1,0 +1,32 @@
+---
+- name: Create Azure VM
+  hosts: localhost
+  connection: local
+  tasks:
+
+  - name: Create VM
+    azure_rm_virtualmachine:
+      resource_group: myResourceGroup
+      name: node1
+      vm_size: Standard_DS1_v2
+      public_ip_allocation_method: Dynamic
+      admin_username: pawan
+      ssh_password_enabled: false
+      ssh_public_keys: 
+        - path: /home/pawan/.ssh/authorized_keys
+          key_data: "{{ lookup('file', '/root/.ssh/id_rsa.pub') }}"
+        - path: /home/pawan/.ssh/authorized_keys
+          key_data: "{{ lookup('file', '/root/.ssh/key2.pub') }}"		
+      network_interfaces: myNIC
+      image:
+        offer: CentOS
+        publisher: OpenLogic
+        sku: '7.3'
+        version: latest
+  
+- name: With the newly provisioned instance, assign a role
+  hosts: launched
+  gather_facts: True  #We need to re-enable this, as we turned it off earlier.
+  roles:
+     - stack1
+
