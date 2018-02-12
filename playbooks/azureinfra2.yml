@@ -19,7 +19,7 @@
     azure_rm_publicipaddress:
       resource_group: myResourceGroup
       allocation_method: Static
-      name: myPublicIP2
+      name: testnode1publicip
   - name: Create Network Security Group that allows SSH
     azure_rm_securitygroup:
       resource_group: myResourceGroup
@@ -34,15 +34,15 @@
 #  - name: Create virtual network inteface card
 #    azure_rm_networkinterface:
 #      resource_group: myResourceGroup
-#      name: node2
+#      name: myNIC2
 #      virtual_network: myVnet
 #      subnet: mySubnet
-#      public_ip_name: publicipnode2
-#     security_group: myNetworkSecurityGroup
+#      public_ip_name: myPublicIP2
+#      security_group: myNetworkSecurityGroup
   - name: Create VM
     azure_rm_virtualmachine:
       resource_group: myResourceGroup
-      name: zoonode3
+      name: testnode1
       vm_size: Standard_DS1_v2
       admin_username: pawan
       ssh_password_enabled: false
@@ -57,11 +57,17 @@
         publisher: OpenLogic
         sku: '7.3'
         version: latest
-    register: azure
-  - name: Add new instance to host group 
-    shell: | 
-      echo $(az vm list-ip-addresses \-n zoonode3 \--query [0].virtualMachine.network.publicIpAddresses[0].ipAddress -o tsv) > /root/accesskeys/publicipnode1.txt 
-      echo $(az vm show -g myResourceGroup -n zoonode3 -d --query privateIps -otsv) >> /root/accesskeys/privateipnode2.txt
+#    register: azure
+  - name: Add new instance to host group
+    shell: |
+      echo $(az vm list-ip-addresses \-n testnode1 \--query [0].virtualMachine.network.publicIpAddresses[0].ipAddress -o tsv) > /root/accesskeys/publicipnode1.txt
+      echo $(az vm show -g myResourceGroup -n testnode1 -d --query privateIps -otsv) >> /root/accesskeys/privateipnode2.txt
       var1=$(cat /root/accesskeys/publicipnode1.txt)
       sudo sed -i 's/.*[node2].*/[node2] \n '$var1'     ansible_connection=ssh        ansible_user=pawan/' /etc/ansible/hosts
+      var2=$(cat /root/accesskeys/privateipnode2.txt)
+  - name: sleep for 60 seconds and continue with play
+    wait_for: timeout=60
+  - meta: refresh_inventory
+- name: Install Tomcat
+  include: tomcat.yml
 

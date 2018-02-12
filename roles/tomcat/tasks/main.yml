@@ -1,0 +1,4 @@
+---
+# tasks file for tomcat
+- name: Install the httpd rpm
+  yum: name=httpd state=present
