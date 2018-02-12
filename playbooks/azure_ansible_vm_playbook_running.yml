@@ -58,7 +58,5 @@
         sku: '7.3'
         version: latest
     register: azure
-  - name: Add new instance to host group 
-    shell: | 
-      echo $(az vm list-ip-addresses \-n myVM2 \--query [0].virtualMachine.network.publicIpAddresses[0].ipAddress -o tsv) >> /root/accesskeys/publicipnode1.txt 
-      echo $(az vm show -g myResourceGroup -n myVM2 -d --query privateIps -otsv) >> /root/accesskeys/privateipnode1.txt
+  - name: Add new instance to host group
+    shell: echo $(az vm list-ip-addresses \-n myVM2 \--query [0].virtualMachine.network.publicIpAddresses[0].ipAddress -o tsv) >> /root/accesskeys/ip2.txt
